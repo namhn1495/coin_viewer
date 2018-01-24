@@ -5,6 +5,8 @@ import json
 import time
 from datetime import datetime
 from flask import Flask
+from flask import request
+
 app = Flask(__name__)
 
 INPUT = 'input.coin'
@@ -39,6 +41,23 @@ class OrdersHistory:
     def html(self):
         return '<tr><td>{}</td><td>{}/{}</td><td>{}</td><td>{}</td><td>{:.8f}</td><td>{}</td><td>{:.3f}%</td><td>{:.3f}</td></tr>'.format(self.timestring,self.symbol,self.main,self.side,self.price,float(self.price_now),self.amount,float(self.percent_change),float(self.price_usd_now*self.amount))
 
+
+
+@app.route("/uploadreport",methods=['POST'])
+def handle_upload():
+    if request.method == "POST":
+        reports = request.form['input']
+        with open("input.coin", 'w') as f:
+            f.write(reports)
+        
+        return "OKiE"
+    else:
+        return "FALSE"
+    #         # load _sid and _uip from posted JSON and save other data
+    #         # but request.form is empty.
+    #         # >>> request.form
+    #         # ImmutableMultiDict([]) 
+
 @app.route("/")
 def hello():
     response = ""
@@ -63,7 +82,10 @@ def hello():
                 # print(line)
                 tokens = line.replace("\n","").split('\t')
                 symbols = tokens[1].split("/")
-                coin_orders[symbols[0]]  = (OrdersHistory(tokens[0], symbols[0], symbols[1], dict_name[symbols[0]], tokens[3],tokens[4],tokens[5],tokens[6],tokens[7],tokens[8],tokens[10]))
+                try:
+                    coin_orders[symbols[0]]  = (OrdersHistory(tokens[0], symbols[0], symbols[1], dict_name[symbols[0]], tokens[3],tokens[4],tokens[5],tokens[6],tokens[7],tokens[8],tokens[10]))
+                except Exception:
+                    pass
         body = ""
         for coin in json:
             if coin['symbol'] in coin_orders.keys():
@@ -84,4 +106,4 @@ def hello():
 
 
 if __name__ == "__main__":
-    app.run(port=80,debug=True)
+    app.run(debug=True)

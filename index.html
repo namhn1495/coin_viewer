@@ -60,7 +60,7 @@
                     <table class="table">
                         <thead>
                             <tr class="filters">
-                                    <!-- "Date",'Pair','Side','Buy_Price','Recent_Price','Amount','Percent_Change','Total/USD') -->
+                                <!-- "Date",'Pair','Side','Buy_Price','Recent_Price','Amount','Percent_Change','Total/USD') -->
                                 <th>
                                     <input type="text" class="form-control" placeholder="Date" disabled>
                                 </th>
@@ -91,6 +91,53 @@
                     </table>
                 </div>
             </div>
+        </div>
+
+        <div class="form-group">
+
+            <!-- Button trigger modal -->
+            <button class="btn btn-primary" data-toggle="modal" data-target="#myModalNorm">
+                Import data
+            </button>
+
+            <!-- Modal -->
+            <div class="modal fade" id="myModalNorm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <!-- Modal Header -->
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">
+                                <span aria-hidden="true">&times;</span>
+                                <span class="sr-only">Close</span>
+                            </button>
+                            <h4 class="modal-title" id="myModalLabel">
+                                Modal title
+                            </h4>
+                        </div>
+
+                        <!-- Modal Body -->
+                        <div class="modal-body">
+
+                            <form role="form">
+                                <div class="form-group">
+                                    <label for="comment">Comment:</label>
+                                    <textarea class="form-control" rows="5" id="input"></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary" id='submit'>Submit</button>
+                            </form>
+
+                        </div>
+
+                        <!-- Modal Footer -->
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
     <script>
@@ -135,6 +182,22 @@
                     $table.find("tbody").prepend($("<tr class=\"no-result text-center\"><td colspan=\"" +
                         $table.find(".filters th").length + "\">No result found</td></tr>"));
                 }
+            });
+            $("#submit").click(function (e) {
+                e.preventDefault();
+                $.ajax({
+                    type: "POST",
+                    url: "/uploadreport",
+                    data: {
+                        input: $("#input").val(), // < note use of 'this' here
+                    },
+                    success: function (result) {
+                        alert(result);
+                    },
+                    error: function (result) {
+                        alert('error');
+                    }
+                });
             });
         });
     </script>
