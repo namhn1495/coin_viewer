@@ -39,7 +39,10 @@ class OrdersHistory:
     def str(self):
         return ( '{}\t{}/{}\t{}\t{}\t{:.8f}\t{}\t{:.3f}%%\t{:.3f}'.format(self.timestring,self.symbol,self.main,self.side,self.price,float(self.price_now),self.amount,float(self.percent_change),float(self.price_usd_now*self.amount)))
     def html(self):
-        return '<tr><td>{}</td><td>{}/{}</td><td>{}</td><td>{}</td><td>{:.8f}</td><td>{}</td><td>{:.3f}%</td><td>{:.3f}</td></tr>'.format(self.timestring,self.symbol,self.main,self.side,self.price,float(self.price_now),self.amount,float(self.percent_change),float(self.price_usd_now*self.amount))
+        color = "green"
+        if self.percent_change < 0:
+            color = "red"
+        return '<tr><td>{}</td><td>{}/{}</td><td>{}</td><td>{}</td><td>{:.8f}</td><td>{}</td><td><font color="{}">{:.3f}%</font></td><td>{:.3f}</td></tr>'.format(self.timestring,self.symbol,self.main,self.side,self.price,float(self.price_now),self.amount,color,float(self.percent_change),float(self.price_usd_now*self.amount))
 
 
 
