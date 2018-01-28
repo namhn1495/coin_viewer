@@ -21,7 +21,7 @@ class OrdersHistory:
         self.side = side
         self.avg  = float(avg)
         self.price = float(price)
-        self.filled = filled
+        self.filled = float(filled)
         self.amount = float(amount)
         self.total = total
         self.status = status
@@ -35,14 +35,14 @@ class OrdersHistory:
         self.price_usd_now = price_usd
 
     def show(self):
-        print ( '{}\t{}/{}\t{}\t{}\t{:.8f}\t{}\t{:.3f}%%\t{:.3f}'.format(self.timestring,self.symbol,self.main,self.side,self.price,float(self.price_now),self.amount,float(self.percent_change),float(self.price_usd_now*self.amount)))
+        print ( '{}\t{}/{}\t{}\t{}\t{:.8f}\t{}\t{}\t{:.3f}%%\t{:.3f}'.format(self.timestring,self.symbol,self.main,self.side,self.price,float(self.price_now),self.filled,self.amount,float(self.percent_change),float(self.price_usd_now*self.filled)))
     def str(self):
-        return ( '{}\t{}/{}\t{}\t{}\t{:.8f}\t{}\t{:.3f}%%\t{:.3f}'.format(self.timestring,self.symbol,self.main,self.side,self.price,float(self.price_now),self.amount,float(self.percent_change),float(self.price_usd_now*self.amount)))
+        return ( '{}\t{}/{}\t{}\t{}\t{:.8f}\t{}\t{}\t{:.3f}%%\t{:.3f}'.format(self.timestring,self.symbol,self.main,self.side,self.price,float(self.price_now),self.filled,self.amount,float(self.percent_change),float(self.price_usd_now*self.filled)))
     def html(self):
         color = "green"
         if self.percent_change < 0:
             color = "red"
-        return '<tr><td>{}</td><td>{}/{}</td><td>{}</td><td>{}</td><td>{:.8f}</td><td>{}</td><td><font color="{}">{:.3f}%</font></td><td>{:.3f}</td></tr>'.format(self.timestring,self.symbol,self.main,self.side,self.price,float(self.price_now),self.amount,color,float(self.percent_change),float(self.price_usd_now*self.amount))
+        return '<tr><td>{}</td><td>{}/{}</td><td>{}</td><td>{}</td><td>{:.8f}</td><td>{}</td><td>{}</td><td><font color="{}">{:.3f}%</font></td><td>{:.3f}</td></tr>'.format(self.timestring,self.symbol,self.main,self.side,self.price,float(self.price_now),self.filled,self.amount,color,float(self.percent_change),float(self.price_usd_now*self.filled))
 
 
 
@@ -86,7 +86,8 @@ def hello():
                 tokens = line.replace("\n","").split('\t')
                 symbols = tokens[1].split("/")
                 try:
-                    coin_orders[symbols[0]]  = (OrdersHistory(tokens[0], symbols[0], symbols[1], dict_name[symbols[0]], tokens[3],tokens[4],tokens[5],tokens[6],tokens[7],tokens[8],tokens[10]))
+                    if tokens[3] == 'Buy':
+                        coin_orders[symbols[0]]  = (OrdersHistory(tokens[0], symbols[0], symbols[1], dict_name[symbols[0]], tokens[3],tokens[4],tokens[5],tokens[6],tokens[7],tokens[8],tokens[10]))
                 except Exception:
                     pass
         body = ""
