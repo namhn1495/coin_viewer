@@ -12,8 +12,8 @@ app = Flask(__name__)
 INPUT = 'input.coin'
 END_POINT = 'https://api.coinmarketcap.com/v1/ticker/?limit=10000'
 class OrdersHistory:
-    def __init__(self,timestring, symbol, main, name, side, avg, price, filled, amount, total, status):
-
+    def __init__(self,id,timestring, symbol, main, name, side, avg, price, filled, amount, total, status):
+        self.id = id
         self.timestring = timestring
         self.symbol = symbol
         self.main = main
@@ -42,9 +42,30 @@ class OrdersHistory:
         color = "green"
         if self.percent_change < 0:
             color = "red"
-        return '<tr><td>{}</td><td>{}/{}</td><td>{}</td><td>{}</td><td>{:.8f}</td><td>{}</td><td>{}</td><td><font color="{}">{:.3f}%</font></td><td>{:.3f}</td></tr>'.format(self.timestring,self.symbol,self.main,self.side,self.price,float(self.price_now),self.filled,self.amount,color,float(self.percent_change),float(self.price_usd_now*self.filled))
+
+        return '<tr><td>{}</td><td>{}/{}</td><td>{}</td><td>{}</td><td>{:.8f}</td><td>{}</td><td>{}</td><td><font color="{}">{:.3f}%</font></td><td>{:.3f}</td><td><button  type="button" class="btn btn-danger  btn-xs" onclick="Del({})" >Del</button></td></tr>'.format(self.timestring,self.symbol,self.main,self.side,self.price,float(self.price_now),self.filled,self.amount,color,float(self.percent_change),float(self.price_usd_now*self.filled),self.id)
 
 
+
+@app.route("/deleteline",methods=['POST'])
+def delete_line():
+    if request.method == "POST":
+        id = int(request.form['input'])
+        print("id ",id)
+        list = []
+        with open("input.coin", 'r') as f:
+            lid = 0
+            for line in f:
+                if lid != id:
+                    list.append(line)
+                lid+=1
+        with open("input.coin", 'w') as f:
+            for line in list:
+                f.write(line)
+        
+        return "OKiE"
+    else:
+        return "FALSE"
 
 @app.route("/uploadreport",methods=['POST'])
 def handle_upload():
@@ -52,7 +73,7 @@ def handle_upload():
         reports = request.form['input']
         with open("input.coin", 'w') as f:
             f.write(reports)
-        
+
         return "OKiE"
     else:
         return "FALSE"
@@ -81,13 +102,15 @@ def hello():
                 price_ETH = float(coin['price_usd'])
 
         with open(INPUT) as f:
+            id = -1
             for line in f:
                 # print(line)
                 tokens = line.replace("\n","").split('\t')
                 symbols = tokens[1].split("/")
+                id+=1
                 try:
                     if tokens[3] == 'Buy':
-                        coin_orders[symbols[0]]  = (OrdersHistory(tokens[0], symbols[0], symbols[1], dict_name[symbols[0]], tokens[3],tokens[4],tokens[5],tokens[6],tokens[7],tokens[8],tokens[10]))
+                        coin_orders[symbols[0]]  = (OrdersHistory(id,tokens[0], symbols[0], symbols[1], dict_name[symbols[0]], tokens[3],tokens[4],tokens[5],tokens[6],tokens[7],tokens[8],tokens[10]))
                 except Exception:
                     pass
         body = ""
@@ -111,4 +134,4 @@ def hello():
 
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port)
+    app.run(host='0.0.0.0', port=port, debug=True)

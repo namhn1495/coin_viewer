@@ -88,6 +88,9 @@
                                 <th>
                                     <input type="text" class="form-control" placeholder="Total/USD" disabled>
                                 </th>
+                                <th>
+                                    <input type="text" class="form-control" placeholder="" disabled>
+                                </th>
                             </tr>
                         </thead>
                         <tbody></tbody>
@@ -144,6 +147,22 @@
         </div>
     </div>
     <script>
+        function Del(id) {
+            console.log("Xin chào "+id);
+            $.ajax({
+                    type: "POST",
+                    url: "/deleteline",
+                    data: {
+                        input: id,
+                    },
+                    success: function (result) {
+                        location.reload();
+                    },
+                    error: function (result) {
+                        alert('error');
+                    }
+                });
+        }
         $(document).ready(function () {
             $(".filterable .btn-filter").click(function () {
                 var $panel = $(this).parents(".filterable"),
